@@ -37,6 +37,7 @@ public class PropertyOwnerController {
         return  propertyOwnerServices.deletePropertyOwner(propertyOwnerId);
     }
 
+    @PreAuthorize("hasAnyAuthority()('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
     @GetMapping("/{propertyOwnerId}")
     public PropertyOwner getPropertyOwner(@PathVariable Long propertyOwnerId){
         return propertyOwnerServices.getPropertyOwner(propertyOwnerId);

@@ -2,6 +2,7 @@ package zw.co.rapiddata.Controllers;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import zw.co.rapiddata.DTOs.CommentsDTO;
 import zw.co.rapiddata.Models.Comments;
 import zw.co.rapiddata.Services.CommentsServices;
 
@@ -19,7 +20,7 @@ public class CommentsController {
     }
 
     @GetMapping("/property/{propertyId}")
-    public List<Comments> getAllCommentsForProperty(@PathVariable Long propertyId){
+    public List<CommentsDTO> getAllCommentsForProperty(@PathVariable Long propertyId){
         return commentsServices.getAllComments(propertyId);
     }
 
@@ -36,7 +37,7 @@ public class CommentsController {
     }
 
     @GetMapping("/{commentId}")
-    public Comments getComment(@PathVariable Long commentId){
+    public CommentsDTO getComment(@PathVariable Long commentId){
         return commentsServices.getComment(commentId);
     }
 
@@ -44,5 +45,19 @@ public class CommentsController {
     @DeleteMapping("/delete/{commentId}")
     public String deleteComment(@PathVariable Long commentId, Principal principal){
         return commentsServices.deleteComment(commentId, principal);
+    }
+
+    //WITH TOKENS
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_ADMIN','SCOPE_TENANT')")
+    @GetMapping("/{commentId}")
+    public Comments getCommentWithToken(@PathVariable Long commentId){
+        return commentsServices.getCommentWithToken(commentId);
+    }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_ADMIN','SCOPE_TENANT')")
+    @GetMapping("/property/{propertyId}")
+    public List<Comments> getAllCommentsForPropertyWithToken(@PathVariable Long propertyId){
+        return commentsServices.getAllCommentsWithToken(propertyId);
     }
 }
