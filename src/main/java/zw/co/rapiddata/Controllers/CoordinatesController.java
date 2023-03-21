@@ -3,6 +3,7 @@ package zw.co.rapiddata.Controllers;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import zw.co.rapiddata.DTOs.PropertyDTO;
 import zw.co.rapiddata.Models.Coordinates;
 import zw.co.rapiddata.Models.Property;
 import zw.co.rapiddata.Services.PropertyServices;
@@ -22,10 +23,10 @@ public class CoordinatesController {
 
     @GetMapping
     public List<Coordinates> getAllCoordinates() {
-        List<Property> properties = propertyServices.getAllProperties();
+        List<PropertyDTO> properties = propertyServices.getAllProperties();
         List<Coordinates> coordinatesList = new ArrayList<>();
 
-        for (Property property : properties) {
+        for (PropertyDTO property : properties) {
             coordinatesList.add(property.getCoordinates());
         }
 

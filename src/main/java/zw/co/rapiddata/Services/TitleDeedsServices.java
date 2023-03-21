@@ -30,7 +30,7 @@ public class TitleDeedsServices {
 
     public String upLoadDeed(String originalFileName, String blobName, Long propertyId) {
         TitleDeeds deed;
-        deed = new TitleDeeds(originalFileName, blobName, propertyServices.getProperty(propertyId));
+        deed = new TitleDeeds(originalFileName, blobName, propertyServices.getPropertyWithToken(propertyId));
         titleDeedsRepository.save(deed);
         return "Title Deed was Saved";
     }
