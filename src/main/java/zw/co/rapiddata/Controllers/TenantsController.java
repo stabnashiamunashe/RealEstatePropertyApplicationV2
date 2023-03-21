@@ -27,7 +27,7 @@ public class TenantsController {
         return tenantsServices.getAllTenants();
     }
 
-    @DeleteMapping("/authenticateddelete/{tenantId}")
+    @DeleteMapping("/authenticated/delete/{tenantId}")
     public String deleteTenant(@PathVariable Long tenantId){
         return  tenantsServices.deleteTenant(tenantId);
     }

@@ -8,7 +8,7 @@ import zw.co.rapiddata.Services.PropertyOwnerServices;
 import java.util.List;
 
 @RestController
-@RequestMapping("it ")
+@RequestMapping("/api/v1/property_owners")
 public class PropertyOwnerController {
 
     private final PropertyOwnerServices propertyOwnerServices;
