@@ -41,8 +41,12 @@ public class TenantsServices {
         return "Property Owner Deleted!";
     }
 
+    public Tenant getLoggedInTenant(String email) {
+        return tenantsRepository.findByEmail(email);
+    }
+
     public Tenant getTenant(Long tenantId) {
-        return tenantsRepository.findById(tenantId).orElseThrow(() -> new EntityNotFoundException("Location not found with id " + tenantId));
+        return tenantsRepository.findById(tenantId).orElseThrow(() -> new EntityNotFoundException("Tenant not found with id " + tenantId));
     }
 
     public List<Tenant> getAllTenants() {

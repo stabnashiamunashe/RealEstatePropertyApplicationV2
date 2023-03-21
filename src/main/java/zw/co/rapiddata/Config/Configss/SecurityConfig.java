@@ -1,5 +1,6 @@
 package zw.co.rapiddata.Config.Configss;
 
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import zw.co.rapiddata.Config.Service.MyUserDetailsService;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -57,12 +58,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             return   http
-                .csrf(csrf -> csrf.disable())
-                    .cors(cors -> cors.disable())
+                .csrf(AbstractHttpConfigurer::disable)
+                    .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth-> auth
-                                .requestMatchers("/**").permitAll()
-                                .anyRequest().authenticated()
+                                .requestMatchers("/api/v1/properties/authenticated/**").authenticated()
+                                .requestMatchers("/api/v1/comments/authenticated/**").authenticated()
+                                .requestMatchers("/api/v1/coordinates/authenticated/**").authenticated()
+                                .requestMatchers("/api/v1/images/authenticated/**").authenticated()
+                                .requestMatchers("/api/v1/location/authenticated/**").authenticated()
+                                .requestMatchers("/api/v1/property_owners/authenticated/**").authenticated()
+                                .requestMatchers("/api/v1/tenants/authenticated/**").authenticated()
+                                .requestMatchers("/api/v1/deeds/authenticated/**").authenticated()
+                                .anyRequest().permitAll()
                 ).userDetailsService(myUserDetailsService)
                     .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
                     .exceptionHandling((ex)-> ex
@@ -92,7 +100,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

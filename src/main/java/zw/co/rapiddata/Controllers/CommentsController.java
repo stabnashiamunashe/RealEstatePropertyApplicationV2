@@ -24,14 +24,13 @@ public class CommentsController {
         return commentsServices.getAllComments(propertyId);
     }
 
-    @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_ADMIN','SCOPE_TENANT')")
     @PostMapping("/create")
     public Comments createComment(@RequestBody Comments comment, @RequestParam Long propertyId, Principal principal){
         return commentsServices.createComment(comment, propertyId, principal);
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_ADMIN','SCOPE_TENANT')")
-    @PutMapping("/update/{propertyId}")
+    @PutMapping("/authenticated/update/{propertyId}")
     public Comments updateComment(@RequestBody Comments comment, @PathVariable Long propertyId){
         return commentsServices.updateComment(propertyId, comment);
     }
@@ -42,7 +41,7 @@ public class CommentsController {
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_ADMIN','SCOPE_TENANT')")
-    @DeleteMapping("/delete/{commentId}")
+    @DeleteMapping("/authenticated/delete/{commentId}")
     public String deleteComment(@PathVariable Long commentId, Principal principal){
         return commentsServices.deleteComment(commentId, principal);
     }
@@ -50,13 +49,13 @@ public class CommentsController {
     //WITH TOKENS
 
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_ADMIN','SCOPE_TENANT')")
-    @GetMapping("/{commentId}")
+    @GetMapping("/authenticated/{commentId}")
     public Comments getCommentWithToken(@PathVariable Long commentId){
         return commentsServices.getCommentWithToken(commentId);
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_ADMIN','SCOPE_TENANT')")
-    @GetMapping("/property/{propertyId}")
+    @GetMapping("/authenticated/property/{propertyId}")
     public List<Comments> getAllCommentsForPropertyWithToken(@PathVariable Long propertyId){
         return commentsServices.getAllCommentsWithToken(propertyId);
     }

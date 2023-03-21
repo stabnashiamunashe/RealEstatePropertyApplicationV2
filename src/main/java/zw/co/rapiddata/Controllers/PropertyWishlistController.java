@@ -19,12 +19,12 @@ public class PropertyWishlistController {
     }
 
     @PreAuthorize("hasAuthority('SCOPE_TENANT')")
-    @PostMapping
+    @PostMapping("/authenticated")
     public String addPropertyToWishlist(@RequestParam Long propertyId, Principal principal){
         return propertyWishlistServices.addPropertyToWishlist(propertyId, principal);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/authenticated/{id}")
     public List<PropertyWishlist> getPropertyWishlistOfTenant(@PathVariable (value = "propertyId") Long id){
         return propertyWishlistServices.getPropertyWishlistOfTenant(id);
     }

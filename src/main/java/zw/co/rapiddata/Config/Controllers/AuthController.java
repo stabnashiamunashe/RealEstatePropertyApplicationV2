@@ -50,7 +50,8 @@ public class AuthController {
         try {
 
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password()));
-            return tokenService.generateToken(authentication);
+            System.out.println(authentication.getAuthorities());
+            return "token : " + tokenService.generateToken(authentication) + "\n role : " + authentication.getAuthorities();
 
         }
         catch (Exception e){

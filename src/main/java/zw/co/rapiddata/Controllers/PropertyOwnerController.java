@@ -8,7 +8,7 @@ import zw.co.rapiddata.Services.PropertyOwnerServices;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/property_owners")
+@RequestMapping("it ")
 public class PropertyOwnerController {
 
     private final PropertyOwnerServices propertyOwnerServices;
@@ -18,7 +18,7 @@ public class PropertyOwnerController {
     }
 
     @PreAuthorize("hasAuthority('SCOPE_OWNER')")
-    @PutMapping("/update")
+    @PutMapping("/authenticated/update")
     public PropertyOwner updatePropertyOwner(@RequestParam Long propertyOwnerId,
                                              @RequestBody PropertyOwner propertyOwner){
 
@@ -26,19 +26,19 @@ public class PropertyOwnerController {
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    @GetMapping
+    @GetMapping("/authenticated")
     public List<PropertyOwner> getAllPropertyOwners(){
         return propertyOwnerServices.getAllPropertyOwners();
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    @DeleteMapping("/delete/{propertyOwnerId}")
+    @DeleteMapping("/authenticated/delete/{propertyOwnerId}")
     public String deletePropertyOwner(@PathVariable Long propertyOwnerId){
         return  propertyOwnerServices.deletePropertyOwner(propertyOwnerId);
     }
 
     @PreAuthorize("hasAnyAuthority()('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
-    @GetMapping("/{propertyOwnerId}")
+    @GetMapping("/authenticated/{propertyOwnerId}")
     public PropertyOwner getPropertyOwner(@PathVariable Long propertyOwnerId){
         return propertyOwnerServices.getPropertyOwner(propertyOwnerId);
     }

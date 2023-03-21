@@ -23,7 +23,7 @@ public class PropertyController {
     }
 
     @PreAuthorize("hasAuthority('SCOPE_OWNER')")
-    @PostMapping("/create")
+    @PostMapping("/authenticated/create")
     public Property create(@RequestBody Property property, @RequestParam Long locationId, Principal principal){
         return propertyServices.createProperty(property, locationId, principal);
     }
@@ -34,19 +34,19 @@ public class PropertyController {
     }
 
     @PreAuthorize("hasAuthority('SCOPE_OWNER')")
-    @PutMapping("/update/{propertyId}")
+    @PutMapping("/authenticated/update/{propertyId}")
     public Property updateLocation(@RequestBody Property property, @PathVariable Long propertyId){
         return propertyServices.updateProperty(propertyId, property);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    @PutMapping("/update/propertySubDetails")
+    @PutMapping("/authenticated/update/propertySubDetails")
     public Property updatePropertySubscriptionDetails(){
         return null;
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_ADMIN')")
-    @DeleteMapping("/delete/{propertyId}")
+    @DeleteMapping("/authenticated/delete/{propertyId}")
     public String deleteProperty(@PathVariable Long propertyId){
         return propertyServices.deleteProperty(propertyId);
     }
@@ -85,26 +85,26 @@ public class PropertyController {
 
     /// WITH TOKENS
 
-    @PreAuthorize("hasAnyAuthority()('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
-    @GetMapping()
+    @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
+    @GetMapping("/authenticated/all")
     public List<Property> getAllPropertiesWithToken(){
         return propertyServices.getAllPropertiesWithToken();
     }
 
-    @PreAuthorize("hasAnyAuthority()('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
-    @GetMapping("/auth/{propertyId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
+    @GetMapping("/authenticated/{propertyId}")
     public Property getPropertyByIdWithAuth(@PathVariable Long propertyId) {
         return propertyServices.getPropertyWithToken(propertyId);
     }
 
-    @PreAuthorize("hasAnyAuthority()('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
-    @GetMapping("auth/visits/{propertyId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
+    @GetMapping("/authenticated/visits/{propertyId}")
     public Long getPropertyVisitsByIdWithAuth(@PathVariable Long propertyId) {
         return propertyServices.getPropertyVisits(propertyId);
     }
 
-    @PreAuthorize("hasAnyAuthority()('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
-    @GetMapping("auth/search")
+    @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
+    @GetMapping("/authenticated/search")
     public List<Property> findPropertyWithAuth(@RequestParam @Nullable Integer bedrooms,
                                           @RequestParam @Nullable Integer bathrooms,
                                           @RequestParam @Nullable Double minPrice,
