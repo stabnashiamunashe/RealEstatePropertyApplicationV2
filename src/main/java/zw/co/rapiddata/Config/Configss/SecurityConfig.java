@@ -1,5 +1,6 @@
 package zw.co.rapiddata.Config.Configss;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import zw.co.rapiddata.Config.Service.MyUserDetailsService;
 import com.nimbusds.jose.jwk.JWK;
@@ -59,7 +60,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             return   http
                 .csrf(AbstractHttpConfigurer::disable)
-                    .cors(AbstractHttpConfigurer::disable)
+                    .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         auth-> auth
                                 .requestMatchers("/api/v1/properties/authenticated/**").authenticated()

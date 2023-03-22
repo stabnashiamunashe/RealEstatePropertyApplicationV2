@@ -38,24 +38,6 @@ public class AzureImagesBlobServices {
         return serviceClient.getBlobContainerClient(azureBlobProperties.imagescontainer());
     }
 
-//    public ResponseEntity<?> download(String imageIdentifier) {
-//
-//        BlobContainerClient containerClient = containerClient();
-//        BlobClient blobClient = containerClient.getBlobClient(imageIdentifier);
-//
-//        BlobProperties properties = blobClient.getProperties();
-//        String contentType = properties.getContentType();
-//
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//        blobClient.download(outputStream);
-//        byte[] content = outputStream.toByteArray();
-//        return  ResponseEntity.status(HttpStatus.OK)
-//                .contentType(MediaType.parseMediaType(contentType))
-//                .body(content);
-//    }
-
-
-
     public ResponseEntity<?> download(String imageIdentifier) {
 
         BlobContainerClient containerClient = containerClient();
@@ -81,35 +63,6 @@ public class AzureImagesBlobServices {
             return new ResponseEntity<>(HttpStatus.FOUND);
          }
     }
-
-
-//    public void uploadFile(MultipartFile file, String name) throws Exception {
-//
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//
-//        // resize and compress image
-//        try{
-//            Thumbnails.of((File) file)
-//                    .size(750, 750) // resize image to 750x750
-//                    .outputQuality(0.75) // set image quality to 75%
-//                    .toOutputStream(outputStream); // write the output to the ByteArrayOutputStream
-//        }catch(Exception e){
-//            log.error(e.getMessage());
-//        }
-//
-//
-//        byte[] imageBytes = outputStream.toByteArray();
-//
-//        // upload the compressed and resized image to Azure Blob Storage
-//        String contentType = file.getContentType();
-//        BlobContainerClient containerClient = containerClient();
-//        BlobClient blobClient = containerClient.getBlobClient(name);
-//        blobClient.upload(new ByteArrayInputStream(imageBytes), imageBytes.length, true);
-//
-////        blobClient.upload(file.getInputStream(), file.getSize(), true);
-//        BlobHttpHeaders headers = new BlobHttpHeaders().setContentType(contentType);
-//        blobClient.setHttpHeaders(headers);
-//    }
 
     public void uploadFile(MultipartFile file, String name) throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
