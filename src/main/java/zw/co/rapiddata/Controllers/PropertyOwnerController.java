@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import zw.co.rapiddata.Models.PropertyOwner;
 import zw.co.rapiddata.Services.PropertyOwnerServices;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -19,10 +20,8 @@ public class PropertyOwnerController {
 
     @PreAuthorize("hasAuthority('SCOPE_OWNER')")
     @PutMapping("/authenticated/update")
-    public PropertyOwner updatePropertyOwner(@RequestParam Long propertyOwnerId,
-                                             @RequestBody PropertyOwner propertyOwner){
-
-        return propertyOwnerServices.updatePropertyOwner(propertyOwnerId, propertyOwner);
+    public PropertyOwner updatePropertyOwner(@RequestBody PropertyOwner propertyOwner, Principal principal){
+        return propertyOwnerServices.updatePropertyOwner(principal.getName(), propertyOwner);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")

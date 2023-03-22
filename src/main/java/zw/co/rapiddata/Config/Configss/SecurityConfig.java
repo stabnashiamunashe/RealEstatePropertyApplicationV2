@@ -1,7 +1,12 @@
 package zw.co.rapiddata.Config.Configss;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.core.Ordered;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.web.filter.CorsFilter;
 import zw.co.rapiddata.Config.Service.MyUserDetailsService;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -35,8 +40,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class SecurityConfig {
 
     private final RSAKeyProperties rsaKeys;
@@ -60,18 +67,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             return   http
                 .csrf(AbstractHttpConfigurer::disable)
-                    .cors(Customizer.withDefaults())
+                    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(
                         auth-> auth
-                                .requestMatchers("/api/v1/properties/authenticated/**").authenticated()
-                                .requestMatchers("/api/v1/comments/authenticated/**").authenticated()
-                                .requestMatchers("/api/v1/coordinates/authenticated/**").authenticated()
-                                .requestMatchers("/api/v1/images/authenticated/**").authenticated()
-                                .requestMatchers("/api/v1/location/authenticated/**").authenticated()
-                                .requestMatchers("/api/v1/property_owners/authenticated/**").authenticated()
-                                .requestMatchers("/api/v1/tenants/authenticated/**").authenticated()
-                                .requestMatchers("/api/v1/deeds/authenticated/**").authenticated()
-                                .anyRequest().permitAll()
+                                .requestMatchers("/api/v1/auth/**").permitAll()
+                                .requestMatchers("/api/v1/properties/**").permitAll()
+                                .requestMatchers("/api/v1/comments/**").permitAll()
+                                .requestMatchers("/api/v1/coordinates/**").permitAll()
+                                .requestMatchers("/api/v1/images/**").permitAll()
+                                .requestMatchers("/api/v1/location/**").permitAll()
+                                .requestMatchers("/api/v1/property_owners/**").permitAll()
+                                .requestMatchers("/api/v1/tenants/**").permitAll()
+                                .requestMatchers("/api/v1/deeds/**").permitAll()
+                                .anyRequest().authenticated()
                 ).userDetailsService(myUserDetailsService)
                     .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
                     .exceptionHandling((ex)-> ex
@@ -98,16 +106,32 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
+    @Bean
+    public FilterRegistrationBean<CorsFilter> corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOriginPattern("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        CorsFilter filter = new CorsFilter(source);
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(filter);
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return bean;
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","HEAD","OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+        log.info("CorsConfiguration: {}", configuration);
         return source;
     }
-
 
 }

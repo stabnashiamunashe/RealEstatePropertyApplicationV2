@@ -2,6 +2,8 @@ package zw.co.rapiddata.Services;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import zw.co.rapiddata.Models.PropertyOwner;
@@ -21,14 +23,17 @@ public class PropertyOwnerServices {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public PropertyOwner createPropertyOwner(PropertyOwner propertyOwner) {
-        propertyOwner.setPassword(passwordEncoder.encode(propertyOwner.getPassword()));
-        propertyOwner.setRoles("OWNER");
-        return propertyOwnerRepository.save(propertyOwner);
+    public ResponseEntity<?> createPropertyOwner(PropertyOwner propertyOwner) {
+        if (propertyOwnerRepository.existsByEmail(propertyOwner.getEmail())){
+            propertyOwner.setPassword(passwordEncoder.encode(propertyOwner.getPassword()));
+            propertyOwner.setRoles("OWNER");
+            return ResponseEntity.status(HttpStatus.CREATED).body(propertyOwnerRepository.save(propertyOwner));
+        }
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
     }
 
-    public PropertyOwner updatePropertyOwner(Long propertyOwnerId, PropertyOwner propertyOwnerUpdate){
-        PropertyOwner propertyOwner = propertyOwnerRepository.findById(propertyOwnerId).orElseThrow(() -> new EntityNotFoundException("Location not found with id " + propertyOwnerId));
+    public PropertyOwner updatePropertyOwner(String email, PropertyOwner propertyOwnerUpdate){
+        PropertyOwner propertyOwner = propertyOwnerRepository.findByEmail(email);
         propertyOwner.setFirstname(propertyOwnerUpdate.getFirstname());
         propertyOwner.setLastname(propertyOwnerUpdate.getLastname());
         propertyOwner.setEmail(propertyOwnerUpdate.getEmail());

@@ -1,6 +1,9 @@
 package zw.co.rapiddata.Services;
 
+import com.azure.core.http.rest.Response;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import zw.co.rapiddata.Models.Tenant;
@@ -20,14 +23,19 @@ public class TenantsServices {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Tenant createTenant(Tenant tenant) {
-        tenant.setPassword(passwordEncoder.encode(tenant.getPassword()));
-        tenant.setRoles("TENANT");
-        return tenantsRepository.save(tenant);
+    public ResponseEntity<?> createTenant(Tenant tenant) {
+        if (tenantsRepository.existsByEmail(tenant.getEmail())){
+            tenant.setPassword(passwordEncoder.encode(tenant.getPassword()));
+            tenant.setRoles("TENANT");
+            return ResponseEntity.status(HttpStatus.CREATED).body(tenantsRepository.save(tenant));
+        }
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
+
     }
 
-    public Tenant updateTenant(Long tenantId, Tenant tenantUpdate){
-        Tenant tenant = tenantsRepository.findById(tenantId).orElseThrow(() -> new EntityNotFoundException("Location not found with id " + tenantId));
+    public Tenant updateTenant(String email , Tenant tenantUpdate){
+        Tenant tenant = tenantsRepository.findByEmail(email);
         tenant.setFirstname(tenantUpdate.getFirstname());
         tenant.setLastname(tenantUpdate.getLastname());
         tenant.setEmail(tenantUpdate.getEmail());

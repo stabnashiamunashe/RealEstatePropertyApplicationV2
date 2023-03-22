@@ -1,5 +1,6 @@
 package zw.co.rapiddata.Config.Controllers;
 
+import org.springframework.http.ResponseEntity;
 import zw.co.rapiddata.Config.Service.TokenService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,12 +36,12 @@ public class AuthController {
     private final PropertyOwnerServices propertyOwnerServices;
 
     @PostMapping("/register/owner")
-    public PropertyOwner createOwnerOrAgent(@RequestBody PropertyOwner propertyOwner){
+    public ResponseEntity<?> createOwnerOrAgent(@RequestBody PropertyOwner propertyOwner){
         return propertyOwnerServices.createPropertyOwner(propertyOwner);
     }
 
     @PostMapping("/register/tenant")
-    public Tenant createTenant(@RequestBody Tenant tenant){
+    public ResponseEntity<?> createTenant(@RequestBody Tenant tenant){
         return tenantsServices.createTenant(tenant);
     }
 

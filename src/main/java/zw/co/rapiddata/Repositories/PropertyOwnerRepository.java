@@ -8,4 +8,6 @@ public interface PropertyOwnerRepository extends JpaRepository<PropertyOwner, Lo
     PropertyOwner findByProperties_Id(Long id);
     PropertyOwner findByEmail(@NonNull String email);
 
+    boolean existsByEmail(String email);
+
 }
