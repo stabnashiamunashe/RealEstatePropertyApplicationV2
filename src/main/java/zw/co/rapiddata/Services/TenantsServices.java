@@ -25,13 +25,11 @@ public class TenantsServices {
 
     public ResponseEntity<?> createTenant(Tenant tenant) {
         if (tenantsRepository.existsByEmail(tenant.getEmail())){
-            tenant.setPassword(passwordEncoder.encode(tenant.getPassword()));
-            tenant.setRoles("TENANT");
-            return ResponseEntity.status(HttpStatus.CREATED).body(tenantsRepository.save(tenant));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
         }
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
-
+        tenant.setPassword(passwordEncoder.encode(tenant.getPassword()));
+        tenant.setRoles("TENANT");
+        return ResponseEntity.status(HttpStatus.CREATED).body(tenantsRepository.save(tenant));
     }
 
     public Tenant updateTenant(String email , Tenant tenantUpdate){

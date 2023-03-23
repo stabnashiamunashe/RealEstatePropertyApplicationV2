@@ -81,7 +81,7 @@ public class PropertyServices {
                         comment.getId(),
                         comment.getContent(),
                         comment.getUser().getFirstname()))
-                        .toList();
+                .toList();
         var propertyOwner = propertyOwnerRepository.findByProperties_Id(propertyId);
         var propertyOwnerDTO = new PropertyOwnerDTO(
                 propertyOwner.getId(),
@@ -105,7 +105,7 @@ public class PropertyServices {
                 propertyOwnerDTO);
     }
 
-    public Long getPropertyVisits(Long propertyId){
+    public Long getPropertyVisits(Long propertyId) {
         var property = propertyRepository.findById(propertyId).orElse(null);
         assert property != null;
         return property.getVisits();
@@ -141,70 +141,70 @@ public class PropertyServices {
         return propertyDTOs;
     }
 
-        public List<PropertyDTO> findPropertyByCriteriaSearch(@Nullable Integer bedrooms, @Nullable Integer bathrooms, @Nullable Double minPrice,@Nullable Double maxPrice, @Nullable PropertyType propertyType, @Nullable Density density, @Nullable String location) {
-            List<Property> properties = propertyRepository.findBySearchCriteria(bedrooms, bathrooms, propertyType, minPrice, maxPrice, density, location);
-            List<PropertyDTO> propertyDTOs = new ArrayList<>();
-            for (Property property : properties) {
-                PropertyDTO propertyDTO = new PropertyDTO(
-                        property.getId(),
-                        property.getArea(),
-                        property.getBedrooms(),
-                        property.getBathrooms(),
-                        property.getDescription(),
-                        property.getFeatures(),
-                        property.getPrice(),
-                        property.getAddress(),
-                        property.getCoordinates(),
-                        property.getPropertyType(),
-                        property.getPropertyCondition(),
-                        property.getLocation(),
-                        property.getImages(),
-                        property.getComments().stream().map(comment -> new CommentsDTO(
-                                comment.getId(),
-                                comment.getContent(),
-                                comment.getUser().getFirstname()))
-                                .collect(Collectors.toList()),
-                        new PropertyOwnerDTO(property.getPropertyOwner().getId(), property.getPropertyOwner().getFirstname())
-                );
-                propertyDTOs.add(propertyDTO);
-            }
-            return propertyDTOs;
+    public List<PropertyDTO> findPropertyByCriteriaSearch(@Nullable Integer bedrooms, @Nullable Integer bathrooms, @Nullable Double minPrice, @Nullable Double maxPrice, @Nullable PropertyType propertyType, @Nullable Density density, @Nullable String location) {
+        List<Property> properties = propertyRepository.findBySearchCriteria(bedrooms, bathrooms, propertyType, minPrice, maxPrice, density, location);
+        List<PropertyDTO> propertyDTOs = new ArrayList<>();
+        for (Property property : properties) {
+            PropertyDTO propertyDTO = new PropertyDTO(
+                    property.getId(),
+                    property.getArea(),
+                    property.getBedrooms(),
+                    property.getBathrooms(),
+                    property.getDescription(),
+                    property.getFeatures(),
+                    property.getPrice(),
+                    property.getAddress(),
+                    property.getCoordinates(),
+                    property.getPropertyType(),
+                    property.getPropertyCondition(),
+                    property.getLocation(),
+                    property.getImages(),
+                    property.getComments().stream().map(comment -> new CommentsDTO(
+                                    comment.getId(),
+                                    comment.getContent(),
+                                    comment.getUser().getFirstname()))
+                            .collect(Collectors.toList()),
+                    new PropertyOwnerDTO(property.getPropertyOwner().getId(), property.getPropertyOwner().getFirstname())
+            );
+            propertyDTOs.add(propertyDTO);
         }
+        return propertyDTOs;
+    }
 
     public List<PropertyDTO> getPropertiesByOwnerId(Long id) {
-            var properties = propertyRepository.findByPropertyOwner_Id(id);
-            List<PropertyDTO> propertyDTOs = new ArrayList<>();
-            for (Property property : properties) {
-                PropertyDTO propertyDTO = new PropertyDTO(
-                        property.getId(),
-                        property.getArea(),
-                        property.getBedrooms(),
-                        property.getBathrooms(),
-                        property.getDescription(),
-                        property.getFeatures(),
-                        property.getPrice(),
-                        property.getAddress(),
-                        property.getCoordinates(),
-                        property.getPropertyType(),
-                        property.getPropertyCondition(),
-                        property.getLocation(),
-                        property.getImages(),
-                        property.getComments().stream().map(comment -> new CommentsDTO(
-                                        comment.getId(),
-                                        comment.getContent(),
-                                        comment.getUser().getFirstname()))
-                                .collect(Collectors.toList()),
-                        new PropertyOwnerDTO(property.getPropertyOwner().getId(), property.getPropertyOwner().getFirstname())
-                );
-                propertyDTOs.add(propertyDTO);
-            }
-            return propertyDTOs;
+        var properties = propertyRepository.findByPropertyOwner_Id(id);
+        List<PropertyDTO> propertyDTOs = new ArrayList<>();
+        for (Property property : properties) {
+            PropertyDTO propertyDTO = new PropertyDTO(
+                    property.getId(),
+                    property.getArea(),
+                    property.getBedrooms(),
+                    property.getBathrooms(),
+                    property.getDescription(),
+                    property.getFeatures(),
+                    property.getPrice(),
+                    property.getAddress(),
+                    property.getCoordinates(),
+                    property.getPropertyType(),
+                    property.getPropertyCondition(),
+                    property.getLocation(),
+                    property.getImages(),
+                    property.getComments().stream().map(comment -> new CommentsDTO(
+                                    comment.getId(),
+                                    comment.getContent(),
+                                    comment.getUser().getFirstname()))
+                            .collect(Collectors.toList()),
+                    new PropertyOwnerDTO(property.getPropertyOwner().getId(), property.getPropertyOwner().getFirstname())
+            );
+            propertyDTOs.add(propertyDTO);
+        }
+        return propertyDTOs;
     }
 
 
     ///WITH TOKENS
 
-    public List<Property> findPropertyByCriteriaSearchWithToken(@Nullable Integer bedrooms, @Nullable Integer bathrooms, @Nullable Double minPrice,@Nullable Double maxPrice, @Nullable PropertyType propertyType, @Nullable Density density, @Nullable String location){
+    public List<Property> findPropertyByCriteriaSearchWithToken(@Nullable Integer bedrooms, @Nullable Integer bathrooms, @Nullable Double minPrice, @Nullable Double maxPrice, @Nullable PropertyType propertyType, @Nullable Density density, @Nullable String location) {
         return propertyRepository.findBySearchCriteria(bedrooms, bathrooms, propertyType, minPrice, maxPrice, density, location);
     }
 
@@ -216,11 +216,15 @@ public class PropertyServices {
         return propertyRepository.findAll();
     }
 
-    public Property getPropertyWithToken(Long propertyId) {
-        var property = propertyRepository.findById(propertyId).orElse(null);
-        assert property != null;
-        property.setVisits(property.getVisits() + 1);
-        propertyRepository.save(property);
-        return propertyRepository.findById(propertyId).orElseThrow(() -> new EntityNotFoundException("Property not found with id " + propertyId));
+        public Property getPropertyWithToken (Long propertyId){
+            var property = propertyRepository.findById(propertyId).orElse(null);
+            assert property != null;
+            property.setVisits(property.getVisits() + 1);
+            propertyRepository.save(property);
+            return propertyRepository.findById(propertyId).orElseThrow(() -> new EntityNotFoundException("Property not found with id " + propertyId));
+        }
+
+    public List<Property> getPropertiesForLoggedInOwner(String email) {
+        return propertyRepository.findByPropertyOwner_Email(email);
     }
 }

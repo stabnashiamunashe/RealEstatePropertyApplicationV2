@@ -25,11 +25,11 @@ public class PropertyOwnerServices {
 
     public ResponseEntity<?> createPropertyOwner(PropertyOwner propertyOwner) {
         if (propertyOwnerRepository.existsByEmail(propertyOwner.getEmail())){
-            propertyOwner.setPassword(passwordEncoder.encode(propertyOwner.getPassword()));
-            propertyOwner.setRoles("OWNER");
-            return ResponseEntity.status(HttpStatus.CREATED).body(propertyOwnerRepository.save(propertyOwner));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
         }
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
+        propertyOwner.setPassword(passwordEncoder.encode(propertyOwner.getPassword()));
+        propertyOwner.setRoles("OWNER");
+        return ResponseEntity.status(HttpStatus.CREATED).body(propertyOwnerRepository.save(propertyOwner));
     }
 
     public PropertyOwner updatePropertyOwner(String email, PropertyOwner propertyOwnerUpdate){

@@ -33,6 +33,12 @@ public class AuthenticatedPropertyController {
         return propertyServices.getPropertyWithToken(propertyId);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_OWNER')")
+    @GetMapping("/owner")
+    public List<Property> getPropertyForOwner(Principal principal) {
+        return propertyServices.getPropertiesForLoggedInOwner(principal.getName());
+    }
+
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
     @GetMapping("/visits/{propertyId}")
     public Long getPropertyVisitsByIdWithAuth(@PathVariable Long propertyId) {

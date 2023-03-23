@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface PropertyRepository extends JpaRepository<Property, Long>, JpaSpecificationExecutor<Property> {
+    List<Property> findByPropertyOwner_Email(String email);
     List<Property> findByPropertyOwner_Id(Long id);
     List<Property> findAllByLocationId(Long id);
 
