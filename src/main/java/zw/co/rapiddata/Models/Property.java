@@ -62,7 +62,6 @@ public class Property {
     private Location location;
 
     @OneToMany(mappedBy = "property",fetch = FetchType.LAZY)
-    @JsonIgnore
     private List<Images> images;
 
     @OneToMany(mappedBy = "property",fetch = FetchType.LAZY)

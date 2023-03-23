@@ -3,9 +3,13 @@ package zw.co.rapiddata.Services;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import zw.co.rapiddata.DTOs.AuthenticatedPropertyDTO;
 import zw.co.rapiddata.DTOs.CommentsDTO;
 import zw.co.rapiddata.DTOs.PropertyDTO;
 import zw.co.rapiddata.DTOs.PropertyOwnerDTO;
@@ -18,6 +22,8 @@ import zw.co.rapiddata.Repositories.PropertyRepository;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 @Service
@@ -205,7 +211,18 @@ public class PropertyServices {
     ///WITH TOKENS
 
     public List<Property> findPropertyByCriteriaSearchWithToken(@Nullable Integer bedrooms, @Nullable Integer bathrooms, @Nullable Double minPrice, @Nullable Double maxPrice, @Nullable PropertyType propertyType, @Nullable Density density, @Nullable String location) {
-        return propertyRepository.findBySearchCriteria(bedrooms, bathrooms, propertyType, minPrice, maxPrice, density, location);
+        List<Property> properties = propertyRepository.findBySearchCriteria(bedrooms, bathrooms, propertyType, minPrice, maxPrice, density, location);
+        for (Property property : properties) {
+            List<Images> images = property.getImages();
+            // make sure images are not null
+            if (images != null) {
+                // remove the association to avoid serialization issues
+                for (Images image : images) {
+                    image.setProperty(null);
+                }
+            }
+        }
+        return properties;
     }
 
     public List<Property> getPropertiesByOwnerIdWithToken(Long id) {
@@ -213,16 +230,45 @@ public class PropertyServices {
     }
 
     public List<Property> getAllPropertiesWithToken() {
-        return propertyRepository.findAll();
+        List<Property> properties = propertyRepository.findAll();
+        for (Property property : properties) {
+            List<Images> images = property.getImages();
+            // make sure images are not null
+            if (images != null) {
+                // remove the association to avoid serialization issues
+                for (Images image : images) {
+                    image.setProperty(null);
+                }
+            }
+        }
+        return properties;
     }
 
-        public Property getPropertyWithToken (Long propertyId){
-            var property = propertyRepository.findById(propertyId).orElse(null);
-            assert property != null;
+    public ResponseEntity<?> getPropertyWithTokenForUsers (Long propertyId) {
+        Optional<Property> optionalProperty = propertyRepository.findById(propertyId);
+        if (optionalProperty.isPresent()) {
+            Property property = optionalProperty.get();
+            List<Images> images = property.getImages();
+            if (images != null) {
+                // remove the association to avoid serialization issues
+                for (Images image : images) {
+                    image.setProperty(null);
+                }
+            }
             property.setVisits(property.getVisits() + 1);
             propertyRepository.save(property);
-            return propertyRepository.findById(propertyId).orElseThrow(() -> new EntityNotFoundException("Property not found with id " + propertyId));
+            return ResponseEntity.status(HttpStatus.OK).body(property);
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Property with id : " + propertyId + " not found!");
+    }
+
+    public Property getPropertyWithToken (Long propertyId){
+        var property = propertyRepository.findById(propertyId).orElse(null);
+        assert property != null;
+        property.setVisits(property.getVisits() + 1);
+        propertyRepository.save(property);
+        return propertyRepository.findById(propertyId).orElseThrow(() -> new EntityNotFoundException("Property not found with id " + propertyId));
+    }
 
     public List<Property> getPropertiesForLoggedInOwner(String email) {
         return propertyRepository.findByPropertyOwner_Email(email);

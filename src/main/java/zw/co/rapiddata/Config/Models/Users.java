@@ -29,6 +29,8 @@ public class Users {
 
     private String email;
 
+    private String nationalId;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 

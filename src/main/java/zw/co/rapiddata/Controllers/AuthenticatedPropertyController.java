@@ -1,8 +1,10 @@
 package zw.co.rapiddata.Controllers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import zw.co.rapiddata.DTOs.AuthenticatedPropertyDTO;
 import zw.co.rapiddata.Models.Density;
 import zw.co.rapiddata.Models.Property;
 import zw.co.rapiddata.Models.PropertyType;
@@ -29,8 +31,8 @@ public class AuthenticatedPropertyController {
 
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
     @GetMapping("/{propertyId}")
-    public Property getPropertyByIdWithAuth(@PathVariable Long propertyId) {
-        return propertyServices.getPropertyWithToken(propertyId);
+    public ResponseEntity<?> getPropertyByIdWithAuth(@PathVariable Long propertyId) {
+        return propertyServices.getPropertyWithTokenForUsers(propertyId);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_OWNER')")
