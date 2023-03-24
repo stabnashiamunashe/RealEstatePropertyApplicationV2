@@ -4,6 +4,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import zw.co.rapiddata.DTOs.PropertyDTO;
+import zw.co.rapiddata.Models.Conditions;
 import zw.co.rapiddata.Models.Density;
 import zw.co.rapiddata.Models.Property;
 import zw.co.rapiddata.Models.PropertyType;
@@ -32,6 +33,16 @@ public class PropertyController {
         return propertyServices.getAllProperties();
     }
 
+    @GetMapping("/property-types")
+    public PropertyType[] getAllPropertyTypes() {
+        return PropertyType.values();
+    }
+
+    @GetMapping("/property-conditions")
+    public Conditions[] getAllPropertyConditions(){
+        return Conditions.values();
+    }
+
     @GetMapping("/{propertyId}")
     public PropertyDTO getPropertyById(@PathVariable Long propertyId) {
         return propertyServices.getProperty(propertyId);
@@ -39,12 +50,12 @@ public class PropertyController {
 
     @GetMapping("/search")
     public List<PropertyDTO> findProperty(@RequestParam @Nullable Integer bedrooms,
-                                       @RequestParam @Nullable Integer bathrooms,
-                                       @RequestParam @Nullable Double minPrice,
-                                       @RequestParam @Nullable Double maxPrice,
-                                       @RequestParam @Nullable PropertyType propertyType,
-                                       @RequestParam @Nullable Density density,
-                                       @RequestParam @Nullable String location
+                                          @RequestParam @Nullable Integer bathrooms,
+                                          @RequestParam @Nullable Double minPrice,
+                                          @RequestParam @Nullable Double maxPrice,
+                                          @RequestParam @Nullable PropertyType propertyType,
+                                          @RequestParam @Nullable Density density,
+                                          @RequestParam @Nullable String location
                                       ){
 
         return propertyServices.findPropertyByCriteriaSearch(
