@@ -1,7 +1,9 @@
 package zw.co.rapiddata.Controllers;
 
 import org.springframework.web.bind.annotation.*;
+import zw.co.rapiddata.Models.PropertyWishlist;
 import zw.co.rapiddata.Models.Tenant;
+import zw.co.rapiddata.Services.PropertyWishlistServices;
 import zw.co.rapiddata.Services.TenantsServices;
 
 import java.security.Principal;
@@ -34,7 +36,9 @@ public class AuthenticatedTenantController {
     }
 
     @GetMapping("/logged-in-tenant")
-    public Tenant getTenant(Principal principal){
+    public Tenant getLoggedInTenant(Principal principal){
         return tenantsServices.getLoggedInTenant(principal.getName());
     }
+
+
 }
