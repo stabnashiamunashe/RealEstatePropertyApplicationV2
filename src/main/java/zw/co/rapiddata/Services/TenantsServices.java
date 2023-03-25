@@ -1,12 +1,15 @@
 package zw.co.rapiddata.Services;
 
-import com.azure.core.http.rest.Response;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import zw.co.rapiddata.Emails.EmailService;
 import zw.co.rapiddata.Models.Tenant;
+import zw.co.rapiddata.Models.VerificationModels.PendingTenant;
+import zw.co.rapiddata.Models.VerificationModels.VerificationRepository.PendingTenantRepository;
 import zw.co.rapiddata.Repositories.TenantsRepository;
 
 import java.util.List;
@@ -18,9 +21,15 @@ public class TenantsServices {
 
     private final PasswordEncoder passwordEncoder;
 
-    public TenantsServices(TenantsRepository tenantsRepository, PasswordEncoder passwordEncoder) {
+    private final EmailService emailService;
+
+    private final PendingTenantRepository pendingTenantRepository;
+
+    public TenantsServices(TenantsRepository tenantsRepository, PasswordEncoder passwordEncoder, EmailService emailService, PendingTenantRepository pendingTenantRepository) {
         this.tenantsRepository = tenantsRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
+        this.pendingTenantRepository = pendingTenantRepository;
     }
 
     public ResponseEntity<?> createTenant(Tenant tenant) {
@@ -32,13 +41,62 @@ public class TenantsServices {
         return ResponseEntity.status(HttpStatus.CREATED).body(tenantsRepository.save(tenant));
     }
 
+
+    public ResponseEntity<?>  registerTenant(PendingTenant pendingTenant) throws MessagingException {
+        // Check if email is valid
+        if (!emailService.isValidEmail(pendingTenant.getEmail())) {
+            return ResponseEntity.status(HttpStatus.OK).body("This email is invalid!");
+        }
+        // Check if email already exists in database
+
+        if (tenantsRepository.existsByEmail(pendingTenant.getEmail())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
+        }
+
+        // Send verification code to email
+        int verificationCode =  emailService.generateVerificationCode();
+        boolean verificationSent = emailService.sendVerificationCode(pendingTenant.getEmail(), verificationCode);
+
+        if (verificationSent) {
+            // Save user data to pending users table
+            pendingTenant.setVerificationCode(verificationCode);
+            pendingTenantRepository.save(pendingTenant);
+            return ResponseEntity.status(HttpStatus.OK).body("Email Already Registered!");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occured!");
+        }
+    }
+
+    public boolean verifyTenant(String email, int verificationCode) {
+        // Check if verification code is correct
+        PendingTenant pendingTenant = pendingTenantRepository.findByEmail(email);
+        if (pendingTenant != null && pendingTenant.getVerificationCode() == verificationCode) {
+            // Move user data to users table
+            Tenant tenant = new Tenant();
+            tenant.setFirstname(pendingTenant.getFirstname());
+            tenant.setLastname(pendingTenant.getLastname());
+            tenant.setEmail(pendingTenant.getEmail());
+            tenant.setMobile(pendingTenant.getMobile());
+            tenant.setRoles("TENANT");
+            tenant.setNationalId(pendingTenant.getNationalId());
+            tenant.setPassword(passwordEncoder.encode(pendingTenant.getPassword()));
+
+            // Delete user data from pending users table
+            pendingUserRepository.delete(pendingTenant);
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public Tenant updateTenant(String email , Tenant tenantUpdate){
         Tenant tenant = tenantsRepository.findByEmail(email);
         tenant.setFirstname(tenantUpdate.getFirstname());
         tenant.setLastname(tenantUpdate.getLastname());
         tenant.setEmail(tenantUpdate.getEmail());
         tenant.setMobile(tenantUpdate.getMobile());
-        tenant.setPassword(tenantUpdate.getPassword());
+        tenant.setPassword(passwordEncoder.encode(tenantUpdate.getPassword()));
         return tenantsRepository.save(tenant);
     }
 
