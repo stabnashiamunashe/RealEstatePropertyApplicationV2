@@ -63,11 +63,11 @@ public class TenantsServices {
             pendingTenantRepository.save(pendingTenant);
             return ResponseEntity.status(HttpStatus.OK).body("Email Already Registered!");
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occured!");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred!");
         }
     }
 
-    public boolean verifyTenant(String email, int verificationCode) {
+    public ResponseEntity<?>  verifyTenant(String email, int verificationCode) {
         // Check if verification code is correct
         PendingTenant pendingTenant = pendingTenantRepository.findByEmail(email);
         if (pendingTenant != null && pendingTenant.getVerificationCode() == verificationCode) {
@@ -82,11 +82,11 @@ public class TenantsServices {
             tenant.setPassword(passwordEncoder.encode(pendingTenant.getPassword()));
 
             // Delete user data from pending users table
-            pendingUserRepository.delete(pendingTenant);
+            pendingTenantRepository.delete(pendingTenant);
 
-            return true;
+            return ResponseEntity.status(HttpStatus.OK).body("Tenant Successfully Registered!");
         } else {
-            return false;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred!");
         }
     }
 
