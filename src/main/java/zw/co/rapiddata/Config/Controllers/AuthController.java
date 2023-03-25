@@ -1,16 +1,16 @@
 package zw.co.rapiddata.Config.Controllers;
 
+import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import zw.co.rapiddata.Config.Service.TokenService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import zw.co.rapiddata.Models.PropertyOwner;
 import zw.co.rapiddata.Models.Tenant;
+import zw.co.rapiddata.Models.VerificationModels.PendingPropertyOwner;
+import zw.co.rapiddata.Models.VerificationModels.PendingTenant;
 import zw.co.rapiddata.Services.PropertyOwnerServices;
 import zw.co.rapiddata.Services.TenantsServices;
 
@@ -35,14 +35,40 @@ public class AuthController {
 
     private final PropertyOwnerServices propertyOwnerServices;
 
+//    @PostMapping("/register/owner")
+//    public ResponseEntity<?> createOwnerOrAgent(@RequestBody PropertyOwner propertyOwner){
+//        return propertyOwnerServices.createPropertyOwner(propertyOwner);
+//    }
+//
+//    @PostMapping("/register/tenant")
+//    public ResponseEntity<?> createTenant(@RequestBody Tenant tenant){
+//        return tenantsServices.createTenant(tenant);
+//    }
+
     @PostMapping("/register/owner")
-    public ResponseEntity<?> createOwnerOrAgent(@RequestBody PropertyOwner propertyOwner){
-        return propertyOwnerServices.createPropertyOwner(propertyOwner);
+    public ResponseEntity<?> createOwnerOrAgent(@RequestBody PendingPropertyOwner pendingPropertyOwner) throws MessagingException {
+        return propertyOwnerServices.registerOwner(pendingPropertyOwner);
+    }
+
+    @PostMapping("/verify/owner")
+    public ResponseEntity<?> verifyOwner(@RequestParam String email,
+                                         @RequestParam int verificationCode) {
+
+        return propertyOwnerServices.verifyOwner(email,verificationCode);
+
+    }
+
+    @PostMapping("/verify/tenant")
+    public ResponseEntity<?> verifyTenant(@RequestParam String email,
+                                          @RequestParam int verificationCode) {
+
+        return tenantsServices.verifyTenant(email,verificationCode);
+
     }
 
     @PostMapping("/register/tenant")
-    public ResponseEntity<?> createTenant(@RequestBody Tenant tenant){
-        return tenantsServices.createTenant(tenant);
+    public ResponseEntity<?> createTenant(@RequestBody PendingTenant pendingTenant) throws MessagingException {
+        return tenantsServices.registerTenant(pendingTenant);
     }
 
     @PostMapping("/login")
