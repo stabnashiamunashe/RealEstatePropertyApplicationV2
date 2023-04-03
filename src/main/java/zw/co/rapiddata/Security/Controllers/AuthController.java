@@ -1,14 +1,12 @@
-package zw.co.rapiddata.Config.Controllers;
+package zw.co.rapiddata.Security.Controllers;
 
 import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import zw.co.rapiddata.Config.Service.TokenService;
+import zw.co.rapiddata.Security.Service.TokenService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import zw.co.rapiddata.Models.PropertyOwner;
-import zw.co.rapiddata.Models.Tenant;
 import zw.co.rapiddata.Models.VerificationModels.PendingPropertyOwner;
 import zw.co.rapiddata.Models.VerificationModels.PendingTenant;
 import zw.co.rapiddata.Services.PropertyOwnerServices;
@@ -45,17 +43,14 @@ public class AuthController {
 //        return tenantsServices.createTenant(tenant);
 //    }
 
-    @PostMapping("/register/owner")
-    public ResponseEntity<?> createOwnerOrAgent(@RequestBody PendingPropertyOwner pendingPropertyOwner) throws MessagingException {
-        return propertyOwnerServices.registerOwner(pendingPropertyOwner);
+    @PostMapping("/register/email/owner")
+    public ResponseEntity<?> registerOwnerByEmail(@RequestBody PendingPropertyOwner pendingPropertyOwner) throws MessagingException {
+        return propertyOwnerServices.registerOwnerByEmail(pendingPropertyOwner);
     }
 
-    @PostMapping("/verify/owner")
-    public ResponseEntity<?> verifyOwner(@RequestParam String email,
-                                         @RequestParam int verificationCode) {
-
-        return propertyOwnerServices.verifyOwner(email,verificationCode);
-
+    @PostMapping("/register/sms/owner")
+    public ResponseEntity<?> registerOwnerByPhoneNumber(@RequestBody PendingPropertyOwner pendingPropertyOwner) throws Exception {
+        return propertyOwnerServices.registerOwnerByPhoneNumber(pendingPropertyOwner);
     }
 
     @PostMapping("/verify/tenant")
@@ -65,10 +60,21 @@ public class AuthController {
         return tenantsServices.verifyTenant(email,verificationCode);
 
     }
+    @PostMapping("/verify/owner")
+    public ResponseEntity<?> verifyOwner(@RequestParam String email,
+                                         @RequestParam int verificationCode) {
 
-    @PostMapping("/register/tenant")
-    public ResponseEntity<?> createTenant(@RequestBody PendingTenant pendingTenant) throws MessagingException {
-        return tenantsServices.registerTenant(pendingTenant);
+        return propertyOwnerServices.verifyOwner(email,verificationCode);
+    }
+
+    @PostMapping("/register/email/tenant")
+    public ResponseEntity<?> createTenantByEmail(@RequestBody PendingTenant pendingTenant) throws MessagingException {
+        return tenantsServices.registerTenantByEmail(pendingTenant);
+    }
+
+    @PostMapping("/register/sms/tenant")
+    public ResponseEntity<?> createTenantBySMS(@RequestBody PendingTenant pendingTenant) throws Exception {
+        return tenantsServices.registerTenantByPhoneNumber(pendingTenant);
     }
 
     @PostMapping("/login")

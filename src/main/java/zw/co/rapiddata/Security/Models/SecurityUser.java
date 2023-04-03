@@ -1,4 +1,4 @@
-package zw.co.rapiddata.Config.Models;
+package zw.co.rapiddata.Security.Models;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

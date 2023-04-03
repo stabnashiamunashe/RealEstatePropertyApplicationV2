@@ -8,10 +8,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import zw.co.rapiddata.Emails.EmailService;
 import zw.co.rapiddata.Models.PropertyOwner;
-import zw.co.rapiddata.Models.Tenant;
 import zw.co.rapiddata.Models.VerificationModels.PendingPropertyOwner;
 import zw.co.rapiddata.Models.VerificationModels.VerificationRepository.PendingPropertyOwnerRepository;
 import zw.co.rapiddata.Repositories.PropertyOwnerRepository;
+import zw.co.rapiddata.SMS.TwilioService;
 
 import java.util.List;
 
@@ -26,14 +26,17 @@ public class PropertyOwnerServices {
 
     private final PendingPropertyOwnerRepository pendingPropertyOwnerRepository;
 
-    public PropertyOwnerServices(PropertyOwnerRepository propertyOwnerRepository, PasswordEncoder passwordEncoder, EmailService emailService, PendingPropertyOwnerRepository pendingPropertyOwnerRepository) {
+    private final TwilioService twilioService;
+
+    public PropertyOwnerServices(PropertyOwnerRepository propertyOwnerRepository, PasswordEncoder passwordEncoder, EmailService emailService, PendingPropertyOwnerRepository pendingPropertyOwnerRepository, TwilioService twilioService) {
         this.propertyOwnerRepository = propertyOwnerRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.pendingPropertyOwnerRepository = pendingPropertyOwnerRepository;
+        this.twilioService = twilioService;
     }
 
-    public ResponseEntity<?>  registerOwner(PendingPropertyOwner pendingPropertyOwner) throws MessagingException {
+    public ResponseEntity<?>  registerOwnerByEmail(PendingPropertyOwner pendingPropertyOwner) throws MessagingException {
         // Check if email is valid
         if (!emailService.isValidEmail(pendingPropertyOwner.getEmail())) {
             return ResponseEntity.status(HttpStatus.OK).body("This email is invalid!");
@@ -51,6 +54,34 @@ public class PropertyOwnerServices {
         if (verificationSent) {
             // Save user data to pending users table
             pendingPropertyOwner.setVerificationCode(verificationCode);
+            pendingPropertyOwner.setPassword(passwordEncoder.encode(pendingPropertyOwner.getPassword()));
+            pendingPropertyOwnerRepository.save(pendingPropertyOwner);
+            return ResponseEntity.status(HttpStatus.OK).body("Verification Code Was Sent To The Email You Provided!");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An Error Occurred!");
+        }
+    }
+
+    public ResponseEntity<?>  registerOwnerByPhoneNumber(PendingPropertyOwner pendingPropertyOwner) throws Exception {
+        // Check if email is valid
+
+        if (!emailService.isValidEmail(pendingPropertyOwner.getEmail())) {
+            return ResponseEntity.status(HttpStatus.OK).body("This email is invalid!");
+        }
+        // Check if email already exists in database
+
+        if (propertyOwnerRepository.existsByEmail(pendingPropertyOwner.getEmail())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
+        }
+
+        // Send verification code to email
+        int verificationCode =  twilioService.generateVerificationCode();
+        boolean verificationSent = twilioService.sendSmsVerificationCode(pendingPropertyOwner.getMobile(), verificationCode);
+
+        if (verificationSent) {
+            // Save user data to pending users table
+            pendingPropertyOwner.setVerificationCode(verificationCode);
+            pendingPropertyOwner.setPassword(passwordEncoder.encode(pendingPropertyOwner.getPassword()));
             pendingPropertyOwnerRepository.save(pendingPropertyOwner);
             return ResponseEntity.status(HttpStatus.OK).body("Verification Code Was Sent To The Email You Provided!");
         } else {
@@ -63,21 +94,21 @@ public class PropertyOwnerServices {
         PendingPropertyOwner pendingPropertyOwner = pendingPropertyOwnerRepository.findByEmail(email);
         if (pendingPropertyOwner != null && pendingPropertyOwner.getVerificationCode() == verificationCode) {
             // Move user data to users table
-            Tenant tenant = new Tenant();
-            tenant.setFirstname(pendingPropertyOwner.getFirstname());
-            tenant.setLastname(pendingPropertyOwner.getLastname());
-            tenant.setEmail(pendingPropertyOwner.getEmail());
-            tenant.setMobile(pendingPropertyOwner.getMobile());
-            tenant.setRoles("OWNER");
-            tenant.setNationalId(pendingPropertyOwner.getNationalId());
-            tenant.setPassword(passwordEncoder.encode(pendingPropertyOwner.getPassword()));
-
+            PropertyOwner propertyOwner = new PropertyOwner();
+            propertyOwner.setFirstname(pendingPropertyOwner.getFirstname());
+            propertyOwner.setLastname(pendingPropertyOwner.getLastname());
+            propertyOwner.setEmail(pendingPropertyOwner.getEmail());
+            propertyOwner.setMobile(pendingPropertyOwner.getMobile());
+            propertyOwner.setRoles("OWNER");
+            propertyOwner.setNationalId(pendingPropertyOwner.getNationalId());
+            propertyOwner.setPassword(pendingPropertyOwner.getPassword());
+            propertyOwnerRepository.save(propertyOwner);
             // Delete user data from pending users table
             pendingPropertyOwnerRepository.delete(pendingPropertyOwner);
 
             return ResponseEntity.status(HttpStatus.OK).body("Owner Successfully Registered!");
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Incorrect Code!");
         }
     }
 

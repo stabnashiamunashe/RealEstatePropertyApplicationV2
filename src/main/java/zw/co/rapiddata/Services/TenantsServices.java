@@ -11,6 +11,7 @@ import zw.co.rapiddata.Models.Tenant;
 import zw.co.rapiddata.Models.VerificationModels.PendingTenant;
 import zw.co.rapiddata.Models.VerificationModels.VerificationRepository.PendingTenantRepository;
 import zw.co.rapiddata.Repositories.TenantsRepository;
+import zw.co.rapiddata.SMS.TwilioService;
 
 import java.util.List;
 
@@ -25,24 +26,17 @@ public class TenantsServices {
 
     private final PendingTenantRepository pendingTenantRepository;
 
-    public TenantsServices(TenantsRepository tenantsRepository, PasswordEncoder passwordEncoder, EmailService emailService, PendingTenantRepository pendingTenantRepository) {
+    private final TwilioService twilioService;
+
+    public TenantsServices(TenantsRepository tenantsRepository, PasswordEncoder passwordEncoder, EmailService emailService, PendingTenantRepository pendingTenantRepository, TwilioService twilioService) {
         this.tenantsRepository = tenantsRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.pendingTenantRepository = pendingTenantRepository;
+        this.twilioService = twilioService;
     }
 
-    public ResponseEntity<?> createTenant(Tenant tenant) {
-        if (tenantsRepository.existsByEmail(tenant.getEmail())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
-        }
-        tenant.setPassword(passwordEncoder.encode(tenant.getPassword()));
-        tenant.setRoles("TENANT");
-        return ResponseEntity.status(HttpStatus.CREATED).body(tenantsRepository.save(tenant));
-    }
-
-
-    public ResponseEntity<?>  registerTenant(PendingTenant pendingTenant) throws MessagingException {
+    public ResponseEntity<?>  registerTenantByEmail(PendingTenant pendingTenant) throws MessagingException {
         // Check if email is valid
         if (!emailService.isValidEmail(pendingTenant.getEmail())) {
             return ResponseEntity.status(HttpStatus.OK).body("This email is invalid!");
@@ -60,8 +54,36 @@ public class TenantsServices {
         if (verificationSent) {
             // Save user data to pending users table
             pendingTenant.setVerificationCode(verificationCode);
+            pendingTenant.setPassword(passwordEncoder.encode(pendingTenant.getPassword()));
             pendingTenantRepository.save(pendingTenant);
-            return ResponseEntity.status(HttpStatus.OK).body("Email Already Registered!");
+            return ResponseEntity.status(HttpStatus.OK).body("Email Successfully Registered!");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred!");
+        }
+    }
+
+    public ResponseEntity<?>  registerTenantByPhoneNumber(PendingTenant pendingTenant) throws Exception {
+
+        // Check if email is valid
+        if (!emailService.isValidEmail(pendingTenant.getEmail())) {
+            return ResponseEntity.status(HttpStatus.OK).body("This email is invalid!");
+        }
+        // Check if email already exists in database
+
+        if (tenantsRepository.existsByEmail(pendingTenant.getEmail())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
+        }
+
+        // Send verification code to phone number
+        int verificationCode =  twilioService.generateVerificationCode();
+        boolean verificationSent = twilioService.sendSmsVerificationCode(pendingTenant.getMobile(), verificationCode);
+
+        if (verificationSent) {
+            // Save user data to pending users table
+            pendingTenant.setVerificationCode(verificationCode);
+            pendingTenant.setPassword(passwordEncoder.encode(pendingTenant.getPassword()));
+            pendingTenantRepository.save(pendingTenant);
+            return ResponseEntity.status(HttpStatus.OK).body("Tenant Successfully Registered!");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred!");
         }
@@ -70,6 +92,7 @@ public class TenantsServices {
     public ResponseEntity<?>  verifyTenant(String email, int verificationCode) {
         // Check if verification code is correct
         PendingTenant pendingTenant = pendingTenantRepository.findByEmail(email);
+
         if (pendingTenant != null && pendingTenant.getVerificationCode() == verificationCode) {
             // Move user data to users table
             Tenant tenant = new Tenant();
@@ -79,14 +102,14 @@ public class TenantsServices {
             tenant.setMobile(pendingTenant.getMobile());
             tenant.setRoles("TENANT");
             tenant.setNationalId(pendingTenant.getNationalId());
-            tenant.setPassword(passwordEncoder.encode(pendingTenant.getPassword()));
-
+            tenant.setPassword(pendingTenant.getPassword());
+            tenantsRepository.save(tenant);
             // Delete user data from pending users table
             pendingTenantRepository.delete(pendingTenant);
 
             return ResponseEntity.status(HttpStatus.OK).body("Tenant Successfully Registered!");
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Incorrect Code!");
         }
     }
 

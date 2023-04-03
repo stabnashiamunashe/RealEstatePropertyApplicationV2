@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import zw.co.rapiddata.Config.Models.Users;
+import zw.co.rapiddata.Security.Models.Users;
 
 @Getter
 @Setter

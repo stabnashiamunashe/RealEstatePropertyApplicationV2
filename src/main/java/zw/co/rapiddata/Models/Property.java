@@ -38,6 +38,50 @@ public class Property {
 
     private Double price;
 
+    private Boolean hasBorehole;
+
+    private Integer garagesCarSpots;
+
+    private Integer stories;
+
+    private Boolean hasInternetConnection;
+
+    private Boolean allowsPets;
+
+    private Boolean hasZesa;
+
+    private Boolean hasElectricFence;
+
+    private Boolean hasElectricGate;
+
+    private Boolean hasLandscapedGarden;
+
+    private Boolean hasSwimmingPool;
+
+    private Boolean hasVeranda;
+
+    private Boolean isWalledOrFenced;
+
+    private Boolean hasWaterTanks;
+
+    private Boolean hasAlarmSystem;
+
+    private Boolean hasBuiltInCupboards;
+
+    private Boolean hasCourtyard;
+
+    private Boolean hasFireplace;
+
+    private Boolean hasFittedKitchen;
+
+    private Boolean hasMES;
+
+    private Boolean hasSolarGeyser;
+
+    private Boolean isTiled;
+
+    private Boolean hasWalkInCloset;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long visits;
 

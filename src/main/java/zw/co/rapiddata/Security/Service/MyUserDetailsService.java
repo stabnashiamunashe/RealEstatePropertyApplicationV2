@@ -1,7 +1,7 @@
-package zw.co.rapiddata.Config.Service;
+package zw.co.rapiddata.Security.Service;
 
-import zw.co.rapiddata.Config.Models.SecurityUser;
-import zw.co.rapiddata.Config.Repositories.UserRepository;
+import zw.co.rapiddata.Security.Models.SecurityUser;
+import zw.co.rapiddata.Security.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

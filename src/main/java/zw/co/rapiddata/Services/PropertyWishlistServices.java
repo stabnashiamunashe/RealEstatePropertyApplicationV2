@@ -1,8 +1,8 @@
 package zw.co.rapiddata.Services;
 
 import org.springframework.stereotype.Service;
-import zw.co.rapiddata.Config.Models.Users;
-import zw.co.rapiddata.Config.Repositories.UserRepository;
+import zw.co.rapiddata.Security.Models.Users;
+import zw.co.rapiddata.Security.Repositories.UserRepository;
 import zw.co.rapiddata.Models.PropertyWishlist;
 import zw.co.rapiddata.Repositories.PropertyWishlistRepository;
 

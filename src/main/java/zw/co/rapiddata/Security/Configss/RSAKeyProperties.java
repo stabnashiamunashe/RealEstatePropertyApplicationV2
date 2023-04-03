@@ -1,4 +1,4 @@
-package zw.co.rapiddata.Config.Configss;
+package zw.co.rapiddata.Security.Configss;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -1,4 +1,4 @@
-package zw.co.rapiddata.Config.Models;
+package zw.co.rapiddata.Security.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,6 +24,8 @@ public class Users {
     private Long id;
 
     private String firstname;
+
+    private String secondname;
 
     private String lastname;
 

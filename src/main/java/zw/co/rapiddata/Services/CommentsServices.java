@@ -2,7 +2,7 @@ package zw.co.rapiddata.Services;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import zw.co.rapiddata.Config.Repositories.UserRepository;
+import zw.co.rapiddata.Security.Repositories.UserRepository;
 import zw.co.rapiddata.DTOs.CommentsDTO;
 import zw.co.rapiddata.Models.Comments;
 import zw.co.rapiddata.Models.Property;

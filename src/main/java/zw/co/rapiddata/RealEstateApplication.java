@@ -1,12 +1,13 @@
 package zw.co.rapiddata;
 
-import zw.co.rapiddata.Config.Configss.RSAKeyProperties;
+import zw.co.rapiddata.SMS.TwilioProperties;
+import zw.co.rapiddata.Security.Configss.RSAKeyProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import zw.co.rapiddata.Services.AzureBlobProperties;
 
-@EnableConfigurationProperties({RSAKeyProperties.class, AzureBlobProperties.class})
+@EnableConfigurationProperties({RSAKeyProperties.class, AzureBlobProperties.class, TwilioProperties.class})
 @SpringBootApplication
 public class RealEstateApplication {
 

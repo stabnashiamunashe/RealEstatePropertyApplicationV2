@@ -1,6 +1,8 @@
 package zw.co.rapiddata.Models.VerificationModels;
 
-import jakarta.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +14,29 @@ import zw.co.rapiddata.Models.Tenant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class PendingTenant extends Tenant {
+public class PendingTenant {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String firstname;
+
+    private String secondname;
+
+    private String lastname;
+
+    private String email;
+
+    private String nationalId;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
+
+    private String mobile;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonIgnore
     private int verificationCode;
 
 }

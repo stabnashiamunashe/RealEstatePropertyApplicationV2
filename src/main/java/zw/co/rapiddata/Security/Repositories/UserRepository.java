@@ -1,6 +1,6 @@
-package zw.co.rapiddata.Config.Repositories;
+package zw.co.rapiddata.Security.Repositories;
 
-import zw.co.rapiddata.Config.Models.Users;
+import zw.co.rapiddata.Security.Models.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
