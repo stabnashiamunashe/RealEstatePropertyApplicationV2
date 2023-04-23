@@ -47,8 +47,11 @@ public class TenantsServices {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
         }
 
-        // Send verification code to email
-        int verificationCode =  emailService.generateVerificationCode();
+        if(pendingTenantRepository.existsByEmail(pendingTenant.getEmail())){
+            pendingTenantRepository.deleteByEmail(pendingTenant.getEmail());
+        }
+
+        int verificationCode = emailService.generateVerificationCode();
         boolean verificationSent = emailService.sendVerificationCode(pendingTenant.getEmail(), verificationCode);
 
         if (verificationSent) {
@@ -72,6 +75,10 @@ public class TenantsServices {
 
         if (tenantsRepository.existsByEmail(pendingTenant.getEmail())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
+        }
+
+        if(pendingTenantRepository.existsByEmail(pendingTenant.getEmail())){
+            pendingTenantRepository.deleteByEmail(pendingTenant.getEmail());
         }
 
         // Send verification code to phone number

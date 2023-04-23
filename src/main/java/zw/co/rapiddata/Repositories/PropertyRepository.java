@@ -8,6 +8,7 @@ import zw.co.rapiddata.Models.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public interface PropertyRepository extends JpaRepository<Property, Long>, JpaSpecificationExecutor<Property> {
     List<Property> findByPropertyOwner_Email(String email);
@@ -28,7 +29,9 @@ public interface PropertyRepository extends JpaRepository<Property, Long>, JpaSp
                                                 Double minPrice,
                                                 Double maxPrice,
                                                 Density density,
-                                                String location) {
+                                                String location,
+                                                City city
+    ) {
 
         return findAll((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -42,7 +45,9 @@ public interface PropertyRepository extends JpaRepository<Property, Long>, JpaSp
             if (propertyType != null) {
                 predicates.add(criteriaBuilder.equal(root.get("propertyType"), propertyType));
             }
-
+            if (city != null) {
+                predicates.add(criteriaBuilder.equal(root.get("city"), city));
+            }
             if (density != null) {
                 Join<Property, Location> join = root.join("location");
                 predicates.add(criteriaBuilder.equal(join.get("density"), density));

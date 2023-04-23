@@ -5,6 +5,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import zw.co.rapiddata.DTOs.AuthenticatedPropertyDTO;
+import zw.co.rapiddata.Models.City;
 import zw.co.rapiddata.Models.Density;
 import zw.co.rapiddata.Models.Property;
 import zw.co.rapiddata.Models.PropertyType;
@@ -55,7 +56,8 @@ public class AuthenticatedPropertyController {
                                                @RequestParam @Nullable Double maxPrice,
                                                @RequestParam @Nullable PropertyType propertyType,
                                                @RequestParam @Nullable Density density,
-                                               @RequestParam @Nullable String location
+                                               @RequestParam @Nullable String location,
+                                               @RequestParam @Nullable City city
     ){
 
         return propertyServices.findPropertyByCriteriaSearchWithToken(
@@ -65,7 +67,8 @@ public class AuthenticatedPropertyController {
                 maxPrice,
                 propertyType,
                 density,
-                location
+                location,
+                city
         );
     }
 

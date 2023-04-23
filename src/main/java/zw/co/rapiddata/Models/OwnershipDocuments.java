@@ -12,11 +12,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class TitleDeeds {
+public class OwnershipDocuments {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private PropertyOwnershipType propertyOwnershipType;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String uploadedName;
@@ -28,7 +30,7 @@ public class TitleDeeds {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Property property;
 
-    public TitleDeeds(String uploadedName, String blobName, Property property) {
+    public OwnershipDocuments(String uploadedName, String blobName, Property property) {
         this.uploadedName = uploadedName;
         this.blobName = blobName;
         this.property = property;

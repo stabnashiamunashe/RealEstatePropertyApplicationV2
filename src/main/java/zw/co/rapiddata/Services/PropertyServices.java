@@ -147,8 +147,8 @@ public class PropertyServices {
         return propertyDTOs;
     }
 
-    public List<PropertyDTO> findPropertyByCriteriaSearch(@Nullable Integer bedrooms, @Nullable Integer bathrooms, @Nullable Double minPrice, @Nullable Double maxPrice, @Nullable PropertyType propertyType, @Nullable Density density, @Nullable String location) {
-        List<Property> properties = propertyRepository.findBySearchCriteria(bedrooms, bathrooms, propertyType, minPrice, maxPrice, density, location);
+    public List<PropertyDTO> findPropertyByCriteriaSearch(@Nullable Integer bedrooms, @Nullable Integer bathrooms, @Nullable Double minPrice, @Nullable Double maxPrice, @Nullable PropertyType propertyType, @Nullable Density density, @Nullable String location, @Nullable City city) {
+        List<Property> properties = propertyRepository.findBySearchCriteria(bedrooms, bathrooms, propertyType, minPrice, maxPrice, density, location, city);
         List<PropertyDTO> propertyDTOs = new ArrayList<>();
         for (Property property : properties) {
             PropertyDTO propertyDTO = new PropertyDTO(
@@ -210,8 +210,8 @@ public class PropertyServices {
 
     ///WITH TOKENS
 
-    public List<Property> findPropertyByCriteriaSearchWithToken(@Nullable Integer bedrooms, @Nullable Integer bathrooms, @Nullable Double minPrice, @Nullable Double maxPrice, @Nullable PropertyType propertyType, @Nullable Density density, @Nullable String location) {
-        List<Property> properties = propertyRepository.findBySearchCriteria(bedrooms, bathrooms, propertyType, minPrice, maxPrice, density, location);
+    public List<Property> findPropertyByCriteriaSearchWithToken(@Nullable Integer bedrooms, @Nullable Integer bathrooms, @Nullable Double minPrice, @Nullable Double maxPrice, @Nullable PropertyType propertyType, @Nullable Density density, @Nullable String location, @Nullable City city) {
+        List<Property> properties = propertyRepository.findBySearchCriteria(bedrooms, bathrooms, propertyType, minPrice, maxPrice, density, location, city);
         for (Property property : properties) {
             List<Images> images = property.getImages();
             // make sure images are not null

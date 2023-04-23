@@ -110,7 +110,7 @@ public class Property {
 
     @OneToMany(mappedBy = "property",fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<TitleDeeds> titleDeeds;
+    private List<OwnershipDocuments> ownershipDocuments;
 
     @OneToMany(mappedBy = "property",fetch = FetchType.LAZY)
     @JsonIgnore

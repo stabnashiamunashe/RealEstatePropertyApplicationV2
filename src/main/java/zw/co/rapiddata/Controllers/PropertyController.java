@@ -4,10 +4,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import zw.co.rapiddata.DTOs.PropertyDTO;
-import zw.co.rapiddata.Models.Conditions;
-import zw.co.rapiddata.Models.Density;
-import zw.co.rapiddata.Models.Property;
-import zw.co.rapiddata.Models.PropertyType;
+import zw.co.rapiddata.Models.*;
 import zw.co.rapiddata.Services.PropertyServices;
 
 import java.security.Principal;
@@ -55,7 +52,8 @@ public class PropertyController {
                                           @RequestParam @Nullable Double maxPrice,
                                           @RequestParam @Nullable PropertyType propertyType,
                                           @RequestParam @Nullable Density density,
-                                          @RequestParam @Nullable String location
+                                          @RequestParam @Nullable String location,
+                                          @RequestParam @Nullable City city
                                       ){
 
         return propertyServices.findPropertyByCriteriaSearch(
@@ -65,7 +63,8 @@ public class PropertyController {
                 maxPrice,
                 propertyType,
                 density,
-                location
+                location,
+                city
                 );
     }
 

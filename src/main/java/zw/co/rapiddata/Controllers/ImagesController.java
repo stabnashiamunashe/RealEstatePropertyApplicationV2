@@ -50,4 +50,14 @@ public class ImagesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file.");
         }
     }
+
+    @PostMapping("/upload/multiple")
+    public ResponseEntity<?> uploadFiles(@RequestParam("files") List<MultipartFile> files, @RequestParam Long propertyId) {
+        try {
+            azureBlobServices.uploadFiles(files, propertyId);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Property Images added!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading files.");
+        }
+    }
 }

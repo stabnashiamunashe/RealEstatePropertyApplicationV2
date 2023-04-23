@@ -1,14 +1,12 @@
 package zw.co.rapiddata.Controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import zw.co.rapiddata.Models.Images;
-import zw.co.rapiddata.Models.TitleDeeds;
+import zw.co.rapiddata.Models.OwnershipDocuments;
 import zw.co.rapiddata.Services.AzureTitleDeedsBlobServices;
-import zw.co.rapiddata.Services.TitleDeedsServices;
+import zw.co.rapiddata.Services.OwnershipDocumentsServices;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,11 +18,11 @@ public class TitleDeedsController {
 
     private final AzureTitleDeedsBlobServices azureTitleDeedsBlobServices;
 
-    private final TitleDeedsServices titleDeedsServices;
+    private final OwnershipDocumentsServices ownershipDocumentsServices;
 
-    public TitleDeedsController(AzureTitleDeedsBlobServices azureTitleDeedsBlobServices, TitleDeedsServices titleDeedsServices) {
+    public TitleDeedsController(AzureTitleDeedsBlobServices azureTitleDeedsBlobServices, OwnershipDocumentsServices ownershipDocumentsServices) {
         this.azureTitleDeedsBlobServices = azureTitleDeedsBlobServices;
-        this.titleDeedsServices = titleDeedsServices;
+        this.ownershipDocumentsServices = ownershipDocumentsServices;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -38,16 +36,16 @@ public class TitleDeedsController {
         originalFileName = file.getOriginalFilename();
         savedName = uuid.toString();
         azureTitleDeedsBlobServices.storeDeed(savedName , file.getInputStream(), file.getSize());
-        return titleDeedsServices.upLoadDeed(originalFileName, savedName, propertyId);
+        return ownershipDocumentsServices.upLoadDeed(originalFileName, savedName, propertyId);
     }
 
     @GetMapping("/{id}")
-    public List<TitleDeeds> getTitleDeedsByPropertyId(@PathVariable Long id){
-        return titleDeedsServices.getTitleDeedsByPropertyId(id);
+    public List<OwnershipDocuments> getTitleDeedsByPropertyId(@PathVariable Long id){
+        return ownershipDocumentsServices.getTitleDeedsByPropertyId(id);
     }
 
     @GetMapping("/download/{url}")
     public ResponseEntity<?> getTitleDeedByUrl(@PathVariable String url){
-        return titleDeedsServices.downloadDeed(url);
+        return ownershipDocumentsServices.downloadDeed(url);
     }
 }

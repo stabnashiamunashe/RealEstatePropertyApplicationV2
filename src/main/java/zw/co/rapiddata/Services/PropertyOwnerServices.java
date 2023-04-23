@@ -47,6 +47,11 @@ public class PropertyOwnerServices {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
         }
 
+
+        if(pendingPropertyOwnerRepository.existsByEmail(pendingPropertyOwner.getEmail())){
+            pendingPropertyOwnerRepository.deleteByEmail(pendingPropertyOwner.getEmail());
+        }
+
         // Send verification code to email
         int verificationCode =  emailService.generateVerificationCode();
         boolean verificationSent = emailService.sendVerificationCode(pendingPropertyOwner.getEmail(), verificationCode);
@@ -72,6 +77,10 @@ public class PropertyOwnerServices {
 
         if (propertyOwnerRepository.existsByEmail(pendingPropertyOwner.getEmail())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Registered!");
+        }
+
+        if(pendingPropertyOwnerRepository.existsByEmail(pendingPropertyOwner.getEmail())){
+            pendingPropertyOwnerRepository.deleteByEmail(pendingPropertyOwner.getEmail());
         }
 
         // Send verification code to email

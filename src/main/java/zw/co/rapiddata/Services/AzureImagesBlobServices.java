@@ -13,23 +13,32 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import zw.co.rapiddata.Models.Images;
+import zw.co.rapiddata.Repositories.ImagesRepository;
+import zw.co.rapiddata.Repositories.PropertyRepository;
 
 import java.io.*;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
 public class AzureImagesBlobServices {
+    private final PropertyRepository propertyRepository;
 
     private final AzureBlobProperties azureBlobProperties;
 
-    public AzureImagesBlobServices(AzureBlobProperties azureBlobProperties) {
+    private final ImagesRepository imagesRepository;
+
+    public AzureImagesBlobServices(AzureBlobProperties azureBlobProperties, ImagesRepository imagesRepository,
+                                   PropertyRepository propertyRepository) {
         this.azureBlobProperties = azureBlobProperties;
+        this.imagesRepository = imagesRepository    ;
+        this.propertyRepository = propertyRepository;
     }
 
     private BlobContainerClient containerClient() {
@@ -72,8 +81,8 @@ public class AzureImagesBlobServices {
             file.transferTo(resizedFile);
 
             Thumbnails.of(resizedFile)
-                    .size(750, 750) // resize image to 750x750
-                    .outputQuality(0.75) // set image quality to 75%
+                    .size(1000, 1000) // resize image to 1000x1000
+                    .outputQuality(1) // set image quality to 100%
                     .toOutputStream(outputStream); // write the output to the ByteArrayOutputStream
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -90,7 +99,40 @@ public class AzureImagesBlobServices {
         blobClient.setHttpHeaders(headers);
     }
 
+    public void uploadFiles(List<MultipartFile> files,Long propertyId) throws Exception {
+        String name = null;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+        for(MultipartFile file : files){
+             try {
+                 UUID uuid = UUID.randomUUID();
+                 name = uuid.toString();
+
+                 File resizedFile = File.createTempFile("resized-", "-" + file.getOriginalFilename());
+                 file.transferTo(resizedFile);
+
+                 Thumbnails.of(resizedFile)
+                       .size(1000, 1000) // resize image to 1000x1000
+                       .outputQuality(1) // set image quality to 100%
+                       .toOutputStream(outputStream); // write the output to the ByteArrayOutputStream
+             } catch (Exception e) {
+                  log.error(e.getMessage());
+             }
+            byte[] imageBytes = outputStream.toByteArray();
+
+            // upload the compressed and resized image to Azure Blob Storage
+            String contentType = file.getContentType();
+            BlobContainerClient containerClient = containerClient();
+            BlobClient blobClient = containerClient.getBlobClient(name);
+            blobClient.upload(new ByteArrayInputStream(imageBytes), imageBytes.length, true);
+            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType(contentType);
+            blobClient.setHttpHeaders(headers);
+            var property = propertyRepository.findById(propertyId).orElse(null);
+            Images image = new Images(property, file.getOriginalFilename(), name);
+            imagesRepository.save(image);
+        }
+
+    }
 
 }
 
