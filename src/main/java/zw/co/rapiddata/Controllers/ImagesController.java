@@ -1,5 +1,6 @@
 package zw.co.rapiddata.Controllers;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,11 +28,13 @@ public class ImagesController {
     }
 
     @GetMapping("/entity/{id}")
+    @Cacheable("imageCache")
     public List<Images> getImagesByPropertyId(@PathVariable Long id){
         return imagesServices.getImagesByPropertyId(id);
     }
 
     @GetMapping("/download/{url}")
+    @Cacheable("imageCache")
     public ResponseEntity<?> downloadImageByUrl(@PathVariable String url){
         return azureBlobServices.download(url);
     }
@@ -52,6 +55,7 @@ public class ImagesController {
     }
 
     @PostMapping("/upload/multiple")
+    @Cacheable("imageCache")
     public ResponseEntity<?> uploadFiles(@RequestParam("files") List<MultipartFile> files, @RequestParam Long propertyId) {
         try {
             azureBlobServices.uploadFiles(files, propertyId);

@@ -112,7 +112,7 @@ public class AzureImagesBlobServices {
                  file.transferTo(resizedFile);
 
                  Thumbnails.of(resizedFile)
-                       .size(1000, 1000) // resize image to 1000x1000
+                       .size(750, 750) // resize image to 750x750
                        .outputQuality(1) // set image quality to 100%
                        .toOutputStream(outputStream); // write the output to the ByteArrayOutputStream
              } catch (Exception e) {

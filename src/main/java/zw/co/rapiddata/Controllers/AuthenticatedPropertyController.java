@@ -1,5 +1,7 @@
 package zw.co.rapiddata.Controllers;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,30 +28,35 @@ public class AuthenticatedPropertyController {
 
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
     @GetMapping()
+    @Cacheable("getPropertiesCache")
     public List<Property> getAllPropertiesWithToken(){
         return propertyServices.getAllPropertiesWithToken();
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
     @GetMapping("/{propertyId}")
+    @Cacheable("propertyCache")
     public ResponseEntity<?> getPropertyByIdWithAuth(@PathVariable Long propertyId) {
         return propertyServices.getPropertyWithTokenForUsers(propertyId);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_OWNER')")
     @GetMapping("/owner")
+    @Cacheable("propertyCache")
     public List<Property> getPropertyForOwner(Principal principal) {
         return propertyServices.getPropertiesForLoggedInOwner(principal.getName());
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
     @GetMapping("/visits/{propertyId}")
+    @Cacheable("propertyCache")
     public Long getPropertyVisitsByIdWithAuth(@PathVariable Long propertyId) {
         return propertyServices.getPropertyVisits(propertyId);
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
     @GetMapping("/search")
+    @Cacheable("propertyCache")
     public List<Property> findPropertyWithAuth(@RequestParam @Nullable Integer bedrooms,
                                                @RequestParam @Nullable Integer bathrooms,
                                                @RequestParam @Nullable Double minPrice,
@@ -74,6 +81,7 @@ public class AuthenticatedPropertyController {
 
     @PreAuthorize("hasAuthority('SCOPE_OWNER')")
     @PostMapping("/create")
+    @CacheEvict(value = {"getPropertiesCache"}, allEntries = true)
     public Property create(@RequestBody Property property, @RequestParam Long locationId, Principal principal){
         return propertyServices.createProperty(property, locationId, principal);
     }
