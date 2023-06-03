@@ -1,4 +1,7 @@
 FROM openjdk:17
-ADD target/realestateapi.jar realestateapi.jar
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","realestateapi.jar"]
+
+WORKDIR /app
+
+COPY target/realestateapi.jar /app
+
+CMD ["java", "-jar", "/app/realestateapi.jar"]

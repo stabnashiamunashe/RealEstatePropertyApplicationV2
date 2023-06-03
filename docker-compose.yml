@@ -1,32 +1,37 @@
-  version: '3.8'
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0.25
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: StabnashiA_12
+      MYSQL_DATABASE: rapiddatadb
+      MYSQL_USER: rapiddata
+      MYSQL_PASSWORD: StabnashiA_12
+    volumes:
+      - ./data:/var/lib/mysql # Persist data in a volume
 
-  services:
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
 
-    api:
-      container_name: realestateapi_container
-      image: realestateapi_image
-      restart: always
-      build: .
-      ports:
-        - "8080:8080"
-      environment:
-        MYSQL_HOST: database
-        MYSQL_USER: munashe
-        MYSQL_PASSWORD: stabnashiamunashe
-        MYSQL_PORT: 3306
-
-    database:
-      image: mysql:latest
-      restart: always
-      environment:
-        MYSQL_ROOT_PASSWORD: stabnashiamunashe
-        MYSQL_DATABASE: realestatedb
-        MYSQL_USER: munashe
-        MYSQL_PASSWORD: stabnashiamunashe
-      volumes:
-        - dbdata:/var/lib/mysql
-      ports:
-        - "3306:3306"
-
-  volumes:
-    dbdata:
+  myapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/rapiddatadb?allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: rapiddata
+      SPRING_DATASOURCE_PASSWORD: StabnashiA_12
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379

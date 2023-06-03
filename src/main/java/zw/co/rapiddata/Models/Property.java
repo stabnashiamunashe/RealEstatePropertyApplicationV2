@@ -32,9 +32,9 @@ public class Property {
 
     private Integer bathrooms;
 
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-
-    private String features;
 
     private Double price;
 

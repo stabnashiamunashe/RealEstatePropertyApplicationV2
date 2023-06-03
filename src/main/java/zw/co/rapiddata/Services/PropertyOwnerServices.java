@@ -101,6 +101,7 @@ public class PropertyOwnerServices {
     public ResponseEntity<?>  verifyOwner(String email, int verificationCode) {
         // Check if verification code is correct
         PendingPropertyOwner pendingPropertyOwner = pendingPropertyOwnerRepository.findByEmail(email);
+        System.out.println(pendingPropertyOwner.getVerificationCode() == verificationCode);
         if (pendingPropertyOwner != null && pendingPropertyOwner.getVerificationCode() == verificationCode) {
             // Move user data to users table
             PropertyOwner propertyOwner = new PropertyOwner();
