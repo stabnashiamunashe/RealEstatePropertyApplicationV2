@@ -1,16 +1,10 @@
 package zw.co.rapiddata.Services;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import zw.co.rapiddata.DTOs.AuthenticatedPropertyDTO;
 import zw.co.rapiddata.DTOs.CommentsDTO;
 import zw.co.rapiddata.DTOs.PropertyDTO;
 import zw.co.rapiddata.DTOs.PropertyOwnerDTO;
@@ -24,7 +18,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 @Service
@@ -100,7 +93,6 @@ public class PropertyServices {
                 property.getBedrooms(),
                 property.getBathrooms(),
                 property.getDescription(),
-                property.getFeatures(),
                 property.getPrice(),
                 property.getAddress(),
                 property.getCoordinates(),
@@ -128,7 +120,6 @@ public class PropertyServices {
                     property.getBedrooms(),
                     property.getBathrooms(),
                     property.getDescription(),
-                    property.getFeatures(),
                     property.getPrice(),
                     property.getAddress(),
                     property.getCoordinates(),
@@ -158,7 +149,6 @@ public class PropertyServices {
                     property.getBedrooms(),
                     property.getBathrooms(),
                     property.getDescription(),
-                    property.getFeatures(),
                     property.getPrice(),
                     property.getAddress(),
                     property.getCoordinates(),
@@ -188,7 +178,6 @@ public class PropertyServices {
                     property.getBedrooms(),
                     property.getBathrooms(),
                     property.getDescription(),
-                    property.getFeatures(),
                     property.getPrice(),
                     property.getAddress(),
                     property.getCoordinates(),
@@ -273,5 +262,13 @@ public class PropertyServices {
 
     public List<Property> getPropertiesForLoggedInOwner(String email) {
         return propertyRepository.findByPropertyOwner_Email(email);
+    }
+
+    public List<Property> findPropertiesByPropertyOwner(String email) {
+        return propertyRepository.findByPropertyOwner_Email(email);
+    }
+
+    public void save(Property property) {
+        propertyRepository.save(property);
     }
 }

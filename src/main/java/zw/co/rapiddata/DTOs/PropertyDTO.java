@@ -22,7 +22,6 @@ public class PropertyDTO {
     private Integer bedrooms;
     private Integer bathrooms;
     private String description;
-    private String features;
     private Double price;
     @Embedded
     private Coordinates coordinates;
@@ -41,7 +40,6 @@ public class PropertyDTO {
         this.bedrooms = bedrooms;
         this.bathrooms = bathrooms;
         this.description = description;
-        this.features = features;
         this.price = price;
         this.coordinates = coordinates;
         this.propertyType = propertyType;
@@ -52,13 +50,12 @@ public class PropertyDTO {
         this.propertyOwner = propertyOwner;
     }
 
-    public PropertyDTO(Long id, String area, Integer bedrooms, Integer bathrooms, String description, String features, Double price, String address, Coordinates coordinates, PropertyType propertyType, Conditions propertyCondition, Location location, List<Images> images, PropertyOwnerDTO propertyOwner) {
+    public PropertyDTO(Long id, String area, Integer bedrooms, Integer bathrooms, String description, Double price, String address, Coordinates coordinates, PropertyType propertyType, Conditions propertyCondition, Location location, List<Images> images, PropertyOwnerDTO propertyOwner) {
         this.id = id;
         this.area = area;
         this.bedrooms = bedrooms;
         this.bathrooms = bathrooms;
         this.description = description;
-        this.features = features;
         this.price = price;
         this.coordinates = coordinates;
         this.propertyType = propertyType;
@@ -66,5 +63,21 @@ public class PropertyDTO {
         this.location = location;
         this.images = images;
         this.propertyOwner = propertyOwner;
+    }
+
+    public PropertyDTO(Long id, String area, Integer bedrooms, Integer bathrooms, String description, Double price, String address, Coordinates coordinates, PropertyType propertyType, Conditions propertyCondition, Location location, List<Images> images, List<CommentsDTO> comments, PropertyOwnerDTO propertyOwnerDTO) {
+        this.id = id;
+        this.area = area;
+        this.bedrooms = bedrooms;
+        this.bathrooms = bathrooms;
+        this.description = description;
+        this.price = price;
+        this.coordinates = coordinates;
+        this.propertyType = propertyType;
+        this.propertyCondition = propertyCondition;
+        this.location = location;
+        this.images = images;
+        this.comments = comments;
+        this.propertyOwner = propertyOwnerDTO;
     }
 }

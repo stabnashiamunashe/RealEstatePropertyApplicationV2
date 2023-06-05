@@ -4,6 +4,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import zw.co.rapiddata.DTOs.AuthenticatedPropertyDTO;
@@ -29,6 +30,7 @@ public class AuthenticatedPropertyController {
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
     @GetMapping()
     @Cacheable("getPropertiesCache")
+    @PostFilter("filterObject.active == true")
     public List<Property> getAllPropertiesWithToken(){
         return propertyServices.getAllPropertiesWithToken();
     }
@@ -57,6 +59,7 @@ public class AuthenticatedPropertyController {
     @PreAuthorize("hasAnyAuthority('SCOPE_OWNER','SCOPE_TENANT','SCOPE_ADMIN')")
     @GetMapping("/search")
     @Cacheable("propertyCache")
+    @PostFilter("filterObject.active == true")
     public List<Property> findPropertyWithAuth(@RequestParam @Nullable Integer bedrooms,
                                                @RequestParam @Nullable Integer bathrooms,
                                                @RequestParam @Nullable Double minPrice,

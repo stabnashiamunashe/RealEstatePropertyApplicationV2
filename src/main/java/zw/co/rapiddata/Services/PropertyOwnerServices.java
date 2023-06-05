@@ -13,6 +13,7 @@ import zw.co.rapiddata.Models.VerificationModels.VerificationRepository.PendingP
 import zw.co.rapiddata.Repositories.PropertyOwnerRepository;
 import zw.co.rapiddata.SMS.TwilioService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -156,5 +157,13 @@ public class PropertyOwnerServices {
 
     public PropertyOwner getPropertyOwnerByEmail(String email) {
         return propertyOwnerRepository.findByEmail(email);
+    }
+
+    public List<PropertyOwner> findAllOwnersWithExpiredSubscriptions() {
+        return propertyOwnerRepository.findBySubscriptionExpiryDateBefore(LocalDate.now());
+    }
+
+    public void save(PropertyOwner owner) {
+        propertyOwnerRepository.save(owner);
     }
 }

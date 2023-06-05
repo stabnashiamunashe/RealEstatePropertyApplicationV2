@@ -29,9 +29,5 @@ public class PaynowUpdateReceiverController {
         updateProcessor.processPaynowUpdate(requestFromPaynow);
     }
 
-    @GetMapping("/hello1")
-    public String hello(){
-        return "Hello, Payment was successful!";
-    }
 
 }

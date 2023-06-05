@@ -3,6 +3,7 @@ package zw.co.rapiddata.Security.Configss;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.core.Ordered;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.web.filter.CorsFilter;
 import zw.co.rapiddata.Security.Service.MyUserDetailsService;
@@ -41,6 +42,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 @Slf4j
 public class SecurityConfig {
 

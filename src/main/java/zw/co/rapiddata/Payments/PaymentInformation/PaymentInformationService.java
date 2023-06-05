@@ -1,4 +1,4 @@
-package zw.co.rapiddata.Payments.PayPal.PaymentInformation;
+package zw.co.rapiddata.Payments.PaymentInformation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

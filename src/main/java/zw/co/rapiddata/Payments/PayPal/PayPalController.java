@@ -1,14 +1,15 @@
 package zw.co.rapiddata.Payments.PayPal;
 
 import org.springframework.web.servlet.view.RedirectView;
-import zw.co.rapiddata.Payments.PayPal.PaymentInformation.PaymentInformation;
-import zw.co.rapiddata.Payments.PayPal.PaymentInformation.PaymentInformationService;
+import zw.co.rapiddata.Payments.PaymentInformation.PaymentInformation;
+import zw.co.rapiddata.Payments.PaymentInformation.PaymentInformationService;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import zw.co.rapiddata.Subscriptions.SubscriptionService;
 
 @RestController
 @RequestMapping("/api/paypal")
@@ -18,15 +19,21 @@ public class PayPalController {
 
     private final PaymentInformationService paymentInformationService;
 
-    public PayPalController(PayPalService paypalService, PaymentInformationService paymentInformationService) {
+    private final SubscriptionService subscriptionService;
+
+    public PayPalController(PayPalService paypalService, PaymentInformationService paymentInformationService, SubscriptionService subscriptionService) {
         this.paypalService = paypalService;
         this.paymentInformationService = paymentInformationService;
+        this.subscriptionService = subscriptionService;
     }
 
     @PostMapping("/payment")
     public ResponseEntity<?> makePayment(@RequestBody PaymentRequest paymentRequest) throws PayPalRESTException {
         try {
-            Payment payment = paypalService.createPayment(paymentRequest.getPrice(), paymentRequest.getCurrency(),
+
+            //TODO ADJUST THIS TO WORK FOR ALL SUBSCRIPTIONS TYPES, NOT JUST PROPERTY OWNER
+
+            Payment payment = paypalService.createPayment(subscriptionService.getLatestPropertyOwnerSubscription().getPrice(), paymentRequest.getCurrency(),
                     paymentRequest.getMethod(), paymentRequest.getIntent(),
                     paymentRequest.getDescription(),
                     "http://localhost:8080/api/paypal/cancel/payment",
@@ -51,13 +58,19 @@ public class PayPalController {
                     PaymentInformation paymentInformation = new PaymentInformation();
                     paymentInformation.setIntent(payment.getIntent());
                     paymentInformation.setPaymentMethod(payment.getPayer().getPaymentMethod());
-                    paymentInformation.setEmail(payment.getPayer().getPayerInfo().getEmail());
+                    paymentInformation.setPaying_email(payment.getPayer().getPayerInfo().getEmail());
                     paymentInformation.setFirstName(payment.getPayer().getPayerInfo().getFirstName());
                     paymentInformation.setLastName(payment.getPayer().getPayerInfo().getLastName());
-                    paymentInformation.setDescription(payment.getTransactions().get(0).getDescription());
+                    //USED DESCRIPTION TO STORE EMAIL OR SYSTEM USER MAKING PAYMENT
+                    paymentInformation.setEmail(payment.getTransactions().get(0).getDescription());
                     paymentInformation.setPrice(Double.valueOf(payment.getTransactions().get(0).getAmount().getTotal()));
                     paymentInformation.setCurrency(payment.getTransactions().get(0).getAmount().getCurrency());
                     paymentInformationService.SavePaymentInformation(paymentInformation);
+
+                    //UPDATE SUBSCRIPTION
+
+                 subscriptionService.activateSubscription(paymentInformation.getEmail());
+
                 return new RedirectView("https://auspicex.com/agentAccount/dashboard");
 //                return ResponseEntity.status(HttpStatus.OK).body("Payment completed successfully");
             }

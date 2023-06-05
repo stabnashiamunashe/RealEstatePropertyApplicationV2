@@ -1,4 +1,4 @@
-package zw.co.rapiddata.Payments.PayPal.PaymentInformation;
+package zw.co.rapiddata.Payments.PaymentInformation;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,6 +27,8 @@ public class PaymentInformation {
     private String paymentMethod;
 
     private String email;
+
+    private String paying_email;
 
     private String firstName;
 

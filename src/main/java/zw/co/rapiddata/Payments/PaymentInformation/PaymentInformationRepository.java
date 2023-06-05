@@ -1,4 +1,4 @@
-package zw.co.rapiddata.Payments.PayPal.PaymentInformation;
+package zw.co.rapiddata.Payments.PaymentInformation;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
